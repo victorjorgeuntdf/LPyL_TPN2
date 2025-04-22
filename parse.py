@@ -19,9 +19,7 @@ class ParserHtml:
         """
         normalized = []
         for titulo, autor, texto in articles:
-            # Filtrar títulos, autores y textos vacíos
             if titulo.strip() and autor.strip() and texto.strip():
-                # Normalizar autor: capitalizar cada palabra tras limpiar espacios
                 autor_norm = " ".join(part.capitalize() for part in autor.strip().split())
                 normalized.append((titulo.strip(), autor_norm, texto.strip()))
         return normalized
@@ -34,13 +32,7 @@ class ParserHtml:
         print(f"HTML generado en: {full_path}")
 
     def _build_html(self):
-        """
-        Construye el HTML con header, artículos y footer que incluye fecha de generación.
-        """
-        # Fecha de generación
-        generation_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-
-        # Cabecera HTML con nuevo título de sitio
+        now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         head = f"""
 <!DOCTYPE html>
 <html lang="es">
@@ -48,32 +40,111 @@ class ParserHtml:
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Noticias del Fuego</title>
-  <link rel="stylesheet" href="../static/index.css">
+  <style>
+    /* Reset y tipografía básica */
+    body {{
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, sans-serif;
+      background-color: #f5f5f5;
+      color: #333;
+    }}
+
+    /* Header */
+    .header {{
+      background: #1e88e5;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }}
+
+    /* Contenedor de artículos */
+    .articles {{
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
+      padding: 2rem;
+    }}
+
+    /* Tarjeta de artículo */
+    .article-card {{
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+    }}
+    .article-card h2 {{
+      margin: 0 0 0.5rem;
+      font-size: 1.5rem;
+      color: #1e88e5;
+    }}
+    .article-card .meta {{
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      color: #666;
+    }}
+    .article-card p {{
+      flex-grow: 1;
+      line-height: 1.5;
+    }}
+
+    /* Footer */
+    .footer {{
+      text-align: center;
+      padding: 1rem;
+      font-size: 0.8rem;
+      color: #999;
+      line-height: 1.2;
+    }}
+    .footer .powered {{
+      margin-top: 0.2rem;
+      font-size: 0.7rem;
+      color: inherit;
+      font-style: normal;
+    }}
+    .footer .date {{
+      margin-top: 0.3rem;
+      font-size: 0.7rem;
+      color: inherit;
+    }}
+
+    /* Responsive */
+    @media (max-width: 768px) {{
+      .articles {{
+        grid-template-columns: repeat(2, 1fr);
+      }}
+    }}
+    @media (max-width: 480px) {{
+      .articles {{
+        grid-template-columns: 1fr;
+      }}
+    }}
+  </style>
 </head>
 <body>
   <div class="header">
-     <h1>Noticias del Fuego</h1>
+    <h1>Noticias del Fuego</h1>
   </div>
   <div class="articles">
 """
-        # Tarjetas de artículos
         cards = ""
         for titulo, autor, texto in self.articles:
             cards += f"""
-    <div class=\"article-card\">
+    <div class="article-card">
       <h2>{titulo}</h2>
-      <div class=\"meta\">Por {autor}</div>
+      <div class="meta">Por {autor}</div>
       <p>{texto}</p>
     </div>
 """
-        # Pie de página con fecha de generación 
         footer = f"""
   </div>
-  <footer class="footer">
+  <div class="footer">
     <div>&copy; 2025 - Laboratorio de Programación y Lenguajes</div>
     <div class="powered">Powered by ViktorDev</div>
-    <div class="date">Generado el: {generation_date}</div>
-  </footer>
+    <div class="date">Generado el: {now}</div>
+  </div>
 </body>
 </html>
 """
@@ -105,8 +176,9 @@ if __name__ == "__main__":
         ),
     ]
 
-    # Ejemplos de normalización y filtrado (punto 2)
+    # Ejemplos de normalización y filtrado (punto 2), con 14 casos:
     ejemplos_norm = [
+        # Originales
         ("   La luna sobre Ushuaia   ", "  maría pérez  ",
          "Hoy, el cielo se vistió de un manto plateado…"),
         ("", "Juan Gómez",
@@ -115,6 +187,7 @@ if __name__ == "__main__":
          "El avance de la inteligencia artificial plantea…"),
         ("Economía global 2025", "ana lópez",
          ""),
+
         ("Turismo invernal en Ushuaia bate récords de reservas", "  carlos ramirez ",
          "Las cabañas en Cerro Castor alcanzaron un 95% de ocupación este año…"),
         ("Desarrollo portuario en Río Grande", "María  López",
@@ -137,6 +210,8 @@ if __name__ == "__main__":
          "Las autoridades sanitarias informaron que no se registraron muertes…")
     ]
 
+    # Combinamos ambos conjuntos
     articulos = ejemplos_reales + ejemplos_norm
+
     parser = ParserHtml(articulos)
     parser.generate_html()
