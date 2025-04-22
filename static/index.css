@@ -54,14 +54,17 @@ body {
   padding: 1rem;
   font-size: 0.8rem;
   color: #999;
-  line-height: 1.2;  /* controla el espacio entre líneas */
+  line-height: 1.2;
 }
 
 .footer .powered {
-  margin-top: 0;         /* elimina el espacio extra */
-  font-style: normal;    /* mismo estilo que la línea anterior */
-  color: inherit;        /* mismo color */
-  font-size: inherit;    /* mismo tamaño */
+  margin-top: 0.2rem;  
+  font-size: 0.7rem;
+}
+
+.footer .date {
+  margin-top: 0.2rem;  
+  font-size: 0.7rem;
 }
 
 /* Opcional: en pantallas muy pequeñas, baja a 1 o 2 columnas */

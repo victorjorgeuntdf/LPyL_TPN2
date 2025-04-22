@@ -1,4 +1,5 @@
 import os
+from datetime import datetime
 
 class ParserHtml:
     def __init__(self, articles, output_dir="output"):
@@ -33,21 +34,29 @@ class ParserHtml:
         print(f"HTML generado en: {full_path}")
 
     def _build_html(self):
+        """
+        Construye el HTML con header, artículos y footer que incluye fecha de generación.
+        """
+        # Fecha de generación
+        generation_date = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+        # Cabecera HTML con nuevo título de sitio
         head = f"""
 <!DOCTYPE html>
 <html lang="es">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Artículos Periodísticos</title>
+  <title>Noticias del Fuego</title>
   <link rel="stylesheet" href="../static/index.css">
 </head>
 <body>
   <div class="header">
-    <h1>Artículos Periodísticos</h1>
+     <h1>Noticias del Fuego</h1>
   </div>
   <div class="articles">
 """
+        # Tarjetas de artículos
         cards = ""
         for titulo, autor, texto in self.articles:
             cards += f"""
@@ -57,12 +66,14 @@ class ParserHtml:
       <p>{texto}</p>
     </div>
 """
-        footer = """
+        # Pie de página con fecha de generación 
+        footer = f"""
   </div>
-  <div class="footer">
+  <footer class="footer">
     <div>&copy; 2025 - Laboratorio de Programación y Lenguajes</div>
     <div class="powered">Powered by ViktorDev</div>
-  </div>
+    <div class="date">Generado el: {generation_date}</div>
+  </footer>
 </body>
 </html>
 """
@@ -99,35 +110,33 @@ if __name__ == "__main__":
         ("   La luna sobre Ushuaia   ", "  maría pérez  ",
          "Hoy, el cielo se vistió de un manto plateado…"),
         ("", "Juan Gómez",
-         "Contenido irrelevante"),  # Se filtrará (título vacío)
+         "Contenido irrelevante"),
         ("Tecnología y sociedad", " juan gómez  ",
          "El avance de la inteligencia artificial plantea…"),
         ("Economía global 2025", "ana lópez",
-         ""),  # Se filtrará (texto vacío)
+         ""),
         ("Turismo invernal en Ushuaia bate récords de reservas", "  carlos ramirez ",
          "Las cabañas en Cerro Castor alcanzaron un 95% de ocupación este año…"),
         ("Desarrollo portuario en Río Grande", "María  López",
-         ""),  # Se filtrará (texto vacío)
+         ""),
         ("", "Pedro Fernández",
-         "Se inauguró un nuevo centro cultural en Tolhuin…"),  # Se filtrará (título vacío)
+         "Se inauguró un nuevo centro cultural en Tolhuin…"),
         ("Impacto del cambio climático en el Canal Beagle", "ana perez",
          "Investigadores del CONICET advierten sobre el retroceso glaciar…"),
         ("Nueva ruta aérea Ushuaia-Córdoba anuncia Aerolíneas Argentinas", "  aerolíneas argentinas team ",
          "El servicio comenzará en junio con dos frecuencias semanales…"),
         ("    ", "Laura Gómez",
-         "Evento de música fueguina congrega a artistas locales…"),  # Se filtrará (título solo espacios)
+         "Evento de música fueguina congrega a artistas locales…"),
         ("Programan festival de cine ubicuo en Ushuaia", " juan martín  gómez",
          "La edición 2025 del festival se llevará a cabo del 10 al 15 de mayo…"),
-        ("Pesca artesanal de centolla sufre regulaciones", "       María       Fernández       ",
+        ("Pesca artesanal de centolla sufre regulaciones", "María    Fernández",
          "El gobierno provincial estableció nuevas cuotas de captura…"),
         ("Reapertura del parque nacional Tierra del Fuego", "",
-         "El lunes se reabrió el parque con nuevos senderos señalizados…"),  # Se filtrará (autor vacío)
+         "El lunes se reabrió el parque con nuevos senderos señalizados…"),
         ("Salud pública en TDF: brote de gripe aviar controlado", " Dr. luis sanchez ",
          "Las autoridades sanitarias informaron que no se registraron muertes…")
     ]
 
-    # Combinamos ambos conjuntos
     articulos = ejemplos_reales + ejemplos_norm
-
     parser = ParserHtml(articulos)
     parser.generate_html()
