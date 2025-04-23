@@ -33,6 +33,13 @@ class ParserHtml:
 
     def _build_html(self):
         now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+
+        # Agrupar artículos por autor
+        by_author = OrderedDict()
+        for titulo, autor, texto in self.articles:
+            by_author.setdefault(autor, []).append((titulo, texto))
+
+        # Cabecera y estilos inline
         head = f"""
 <!DOCTYPE html>
 <html lang="es">
@@ -50,14 +57,56 @@ class ParserHtml:
       color: #333;
     }}
 
-    /* Header */
+    /* Header con logo */
     .header {{
       background: #1e88e5;
       color: white;
-      padding: 1rem;
-      text-align: center;
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }}
+    .header img.logo {{
+      height: 100px;
+      width: 100px;
+    }}
+    .header h1 {{
+      margin: 0;
+      font-size: 1.75rem;
     }}
 
+    /* Índice de autores */
+    .toc {{
+      margin: 1.5rem;
+      padding: 0;
+    }}
+    .toc h2 {{
+      margin-bottom: 0.5rem;
+      font-size: 1.25rem;
+      color: #1e88e5;
+    }}
+    .toc ul {{
+    list-style: none;
+    padding: 0;
+    }}
+    .toc li {{
+      margin-bottom: 0.5rem;
+    }}
+    .toc a {{
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background-color: #e0e0e0;
+      color: #333;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: background-color 0.2s, color 0.2s;
+    }}
+    .toc a:hover {{
+      background-color: #1e88e5;
+      color: #fff;
+    }}
+    
     /* Sección de autor */
     .author-section {{
       margin: 2rem;
@@ -68,15 +117,16 @@ class ParserHtml:
       color: #1e88e5;
     }}
 
-    /* Contenedor de artículos: una columna que apila tarjetas */
+    /* Contenedor de artículos: apilar vertical */
     .articles {{
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      padding: 2rem;
+      padding: 0;
+      margin: 0;
     }}
 
-    /* Tarjeta de artículo ocupa todo el ancho */
+    /* Tarjeta de artículo */
     .article-card {{
       width: 100%;
       background: white;
@@ -90,11 +140,6 @@ class ParserHtml:
       margin: 0 0 0.5rem;
       font-size: 1.5rem;
       color: #1e88e5;
-    }}
-    .article-card .meta {{
-      font-size: 0.9rem;
-      margin-bottom: 1rem;
-      color: #666;
     }}
     .article-card p {{
       flex-grow: 1;
@@ -124,18 +169,27 @@ class ParserHtml:
 </head>
 <body>
   <div class="header">
+    <img src="../static/noticias_del_fuego.png" alt="Icono Noticias del Fuego" class="logo">
     <h1>Noticias del Fuego</h1>
   </div>
+  <!-- Índice de Autores -->
+  <nav class="toc">
+    <h2>Índice de Autores</h2>
+    <ul>
 """
-        # Agrupar artículos por autor
-        by_author = OrderedDict()
-        for titulo, autor, texto in self.articles:
-            by_author.setdefault(autor, []).append((titulo, texto))
+        # Generar enlaces del índice
+        for autor in by_author:
+            anchor = autor.lower().replace(" ", "-")
+            head += f'      <li><a href="#autor-{anchor}">{autor}</a></li>\n'
+        head += """    </ul>
+  </nav>
+"""
 
-        # Generar secciones por autor
+        # Generar secciones por autor con anchor
         body = ""
         for autor, items in by_author.items():
-            body += f'  <div class="author-section">\n'
+            anchor = autor.lower().replace(" ", "-")
+            body += f'  <div class="author-section" id="autor-{anchor}">\n'
             body += f'    <h3>{autor}</h3>\n'
             body += f'    <div class="articles">\n'
             for titulo, texto in items:
@@ -219,7 +273,7 @@ if __name__ == "__main__":
         ("Titular de prueba", "", "Autor faltante para validar filtro."),
         ("Titular de prueba", "Autor de prueba", ""),
     ]
-
+    
     articulos = ejemplos_reales + ejemplos_norm
 
     parser = ParserHtml(articulos)

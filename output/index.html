@@ -15,14 +15,56 @@
       color: #333;
     }
 
-    /* Header */
+    /* Header con logo */
     .header {
       background: #1e88e5;
       color: white;
-      padding: 1rem;
-      text-align: center;
+      padding: 0.5rem 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1rem;
+    }
+    .header img.logo {
+      height: 100px;
+      width: 100px;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 1.75rem;
     }
 
+    /* Índice de autores */
+    .toc {
+      margin: 1.5rem;
+      padding: 0;
+    }
+    .toc h2 {
+      margin-bottom: 0.5rem;
+      font-size: 1.25rem;
+      color: #1e88e5;
+    }
+    .toc ul {
+    list-style: none;
+    padding: 0;
+    }
+    .toc li {
+      margin-bottom: 0.5rem;
+    }
+    .toc a {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background-color: #e0e0e0;
+      color: #333;
+      border-radius: 4px;
+      text-decoration: none;
+      transition: background-color 0.2s, color 0.2s;
+    }
+    .toc a:hover {
+      background-color: #1e88e5;
+      color: #fff;
+    }
+    
     /* Sección de autor */
     .author-section {
       margin: 2rem;
@@ -33,15 +75,16 @@
       color: #1e88e5;
     }
 
-    /* Contenedor de artículos: una columna que apila tarjetas */
+    /* Contenedor de artículos: apilar vertical */
     .articles {
       display: flex;
       flex-direction: column;
       gap: 1rem;
-      padding: 2rem;
+      padding: 0;
+      margin: 0;
     }
 
-    /* Tarjeta de artículo ocupa todo el ancho */
+    /* Tarjeta de artículo */
     .article-card {
       width: 100%;
       background: white;
@@ -55,11 +98,6 @@
       margin: 0 0 0.5rem;
       font-size: 1.5rem;
       color: #1e88e5;
-    }
-    .article-card .meta {
-      font-size: 0.9rem;
-      margin-bottom: 1rem;
-      color: #666;
     }
     .article-card p {
       flex-grow: 1;
@@ -89,9 +127,23 @@
 </head>
 <body>
   <div class="header">
+    <img src="../static/noticias_del_fuego.png" alt="Icono Noticias del Fuego" class="logo">
     <h1>Noticias del Fuego</h1>
   </div>
-  <div class="author-section">
+  <!-- Índice de Autores -->
+  <nav class="toc">
+    <h2>Índice de Autores</h2>
+    <ul>
+      <li><a href="#autor-rosangel-salazar">Rosangel Salazar</a></li>
+      <li><a href="#autor-lautaro-grinspan">Lautaro Grinspan</a></li>
+      <li><a href="#autor-reuters">Reuters</a></li>
+      <li><a href="#autor-federico-rivas-molina">Federico Rivas Molina</a></li>
+      <li><a href="#autor-maría-pérez">María Pérez</a></li>
+      <li><a href="#autor-carlos-ramirez">Carlos Ramirez</a></li>
+      <li><a href="#autor-ana-lópez">Ana López</a></li>
+    </ul>
+  </nav>
+  <div class="author-section" id="autor-rosangel-salazar">
     <h3>Rosangel Salazar</h3>
     <div class="articles">
 
@@ -101,7 +153,7 @@
       </div>
     </div>
   </div>
-  <div class="author-section">
+  <div class="author-section" id="autor-lautaro-grinspan">
     <h3>Lautaro Grinspan</h3>
     <div class="articles">
 
@@ -111,7 +163,7 @@
       </div>
     </div>
   </div>
-  <div class="author-section">
+  <div class="author-section" id="autor-reuters">
     <h3>Reuters</h3>
     <div class="articles">
 
@@ -121,7 +173,7 @@
       </div>
     </div>
   </div>
-  <div class="author-section">
+  <div class="author-section" id="autor-federico-rivas-molina">
     <h3>Federico Rivas Molina</h3>
     <div class="articles">
 
@@ -131,7 +183,7 @@
       </div>
     </div>
   </div>
-  <div class="author-section">
+  <div class="author-section" id="autor-maría-pérez">
     <h3>María Pérez</h3>
     <div class="articles">
 
@@ -156,7 +208,7 @@
       </div>
     </div>
   </div>
-  <div class="author-section">
+  <div class="author-section" id="autor-carlos-ramirez">
     <h3>Carlos Ramirez</h3>
     <div class="articles">
 
@@ -181,7 +233,7 @@
       </div>
     </div>
   </div>
-  <div class="author-section">
+  <div class="author-section" id="autor-ana-lópez">
     <h3>Ana López</h3>
     <div class="articles">
 
@@ -200,7 +252,7 @@
   <div class="footer">
     <div>&copy; 2025 - Laboratorio de Programación y Lenguajes</div>
     <div class="powered">Powered by ViktorDev</div>
-    <div class="date">Generado el: 22/04/2025 21:28:20</div>
+    <div class="date">Generado el: 22/04/2025 22:31:36</div>
   </div>
 </body>
 </html>
