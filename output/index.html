@@ -23,16 +23,27 @@
       text-align: center;
     }
 
-    /* Contenedor de artículos */
+    /* Sección de autor */
+    .author-section {
+      margin: 2rem;
+    }
+    .author-section h3 {
+      margin: 0 0 1rem;
+      font-size: 1.25rem;
+      color: #1e88e5;
+    }
+
+    /* Contenedor de artículos: una columna que apila tarjetas */
     .articles {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      display: flex;
+      flex-direction: column;
       gap: 1rem;
       padding: 2rem;
     }
 
-    /* Tarjeta de artículo */
+    /* Tarjeta de artículo ocupa todo el ancho */
     .article-card {
+      width: 100%;
       background: white;
       border-radius: 8px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
@@ -66,25 +77,13 @@
     .footer .powered {
       margin-top: 0.2rem;
       font-size: 0.7rem;
-      color: inherit;
       font-style: normal;
+      color: inherit;
     }
     .footer .date {
-      margin-top: 0.3rem;
+      margin-top: 0.1rem;
       font-size: 0.7rem;
       color: inherit;
-    }
-
-    /* Responsive */
-    @media (max-width: 768px) {
-      .articles {
-        grid-template-columns: repeat(2, 1fr);
-      }
-    }
-    @media (max-width: 480px) {
-      .articles {
-        grid-template-columns: 1fr;
-      }
     }
   </style>
 </head>
@@ -92,85 +91,116 @@
   <div class="header">
     <h1>Noticias del Fuego</h1>
   </div>
-  <div class="articles">
+  <div class="author-section">
+    <h3>Rosangel Salazar</h3>
+    <div class="articles">
 
-    <div class="article-card">
-      <h2>Huawei aprovecha el freno de Trump a Nvidia y prepara envíos de su chip para IA a clientes chinos</h2>
-      <div class="meta">Por Rosangel Salazar</div>
-      <p>Huawei planea comenzar los envíos masivos de su avanzado chip de inteligencia artificial 910C a clientes chinos a partir del mes que viene, dijeron dos personas familiarizadas con el asunto. Añadieron que ya se han realizado algunos envíos.</p>
+      <div class="article-card">
+        <h2>Huawei planea iniciar en mayo el envío de su chip de IA 910C a clientes chinos</h2>
+        <p>Huawei planea iniciar en mayo el envío de su nuevo chip de inteligencia artificial 910C a empresas chinas especializadas en procesamiento de datos. Según fuentes cercanas al proyecto, el fabricante completó las pruebas internas y logró un rendimiento comparable a soluciones occidentales, garantizando compatibilidad con arquitecturas existentes y optimizando el consumo energético.</p>
+      </div>
     </div>
-
-    <div class="article-card">
-      <h2>Ushuaia, la maravilla del fin del mundo que tiene el desafío de equilibrar el turismo con la naturaleza</h2>
-      <div class="meta">Por Lautaro Grinspan Y Victor Moriyama</div>
-      <p>Los visitantes cada vez son más y eso trae prosperidad a la ciudad, pero también representa una carga para la fauna, aumenta el costo de la vida y contribuye a la escasez de viviendas para los trabajadores.</p>
-    </div>
-
-    <div class="article-card">
-      <h2>Argentina logra superávit primario de 745.339 mln pesos en marzo</h2>
-      <div class="meta">Por Reuters</div>
-      <p>En marzo de 2025, el Sector Público Nacional de Argentina registró un superávit primario de 745.339 millones de pesos y un superávit financiero de 398.909 millones de pesos, según informó el ministro de Economía, Luis Caputo.</p>
-    </div>
-
-    <div class="article-card">
-      <h2>Milei celebra la guerra de precios entre proveedores y supermercados: “Se van a meter los productos en el orto”</h2>
-      <div class="meta">Por Federico Rivas Molina</div>
-      <p>En una extensa entrevista, el presidente argentino Javier Milei celebró la confrontación entre supermercados y proveedores por los aumentos de precios, utilizando un lenguaje provocador para destacar el rechazo de grandes cadenas a mercadería con subas de hasta el 12%.</p>
-    </div>
-
-    <div class="article-card">
-      <h2>La luna sobre Ushuaia</h2>
-      <div class="meta">Por María Pérez</div>
-      <p>Hoy, el cielo se vistió de un manto plateado…</p>
-    </div>
-
-    <div class="article-card">
-      <h2>Tecnología y sociedad</h2>
-      <div class="meta">Por Juan Gómez</div>
-      <p>El avance de la inteligencia artificial plantea…</p>
-    </div>
-
-    <div class="article-card">
-      <h2>Turismo invernal en Ushuaia bate récords de reservas</h2>
-      <div class="meta">Por Carlos Ramirez</div>
-      <p>Las cabañas en Cerro Castor alcanzaron un 95% de ocupación este año…</p>
-    </div>
-
-    <div class="article-card">
-      <h2>Impacto del cambio climático en el Canal Beagle</h2>
-      <div class="meta">Por Ana Perez</div>
-      <p>Investigadores del CONICET advierten sobre el retroceso glaciar…</p>
-    </div>
-
-    <div class="article-card">
-      <h2>Nueva ruta aérea Ushuaia-Córdoba anuncia Aerolíneas Argentinas</h2>
-      <div class="meta">Por Aerolíneas Argentinas Team</div>
-      <p>El servicio comenzará en junio con dos frecuencias semanales…</p>
-    </div>
-
-    <div class="article-card">
-      <h2>Programan festival de cine ubicuo en Ushuaia</h2>
-      <div class="meta">Por Juan Martín Gómez</div>
-      <p>La edición 2025 del festival se llevará a cabo del 10 al 15 de mayo…</p>
-    </div>
-
-    <div class="article-card">
-      <h2>Pesca artesanal de centolla sufre regulaciones</h2>
-      <div class="meta">Por María Fernández</div>
-      <p>El gobierno provincial estableció nuevas cuotas de captura…</p>
-    </div>
-
-    <div class="article-card">
-      <h2>Salud pública en TDF: brote de gripe aviar controlado</h2>
-      <div class="meta">Por Dr. Luis Sanchez</div>
-      <p>Las autoridades sanitarias informaron que no se registraron muertes…</p>
-    </div>
-
   </div>
+  <div class="author-section">
+    <h3>Lautaro Grinspan</h3>
+    <div class="articles">
+
+      <div class="article-card">
+        <h2>Temporada invernal en Ushuaia bate récords de reservas</h2>
+        <p>En Ushuaia, la temporada de turismo invernal registró un aumento histórico de reservas en cabañas y hoteles, alcanzando un 92% de ocupación durante julio. Las autoridades políticas destacan el impacto económico positivo, mientras organizaciones ambientales advierten sobre la presión sobre la flora y fauna local. Para mitigar efectos, se proponen nuevas rutas de senderismo menos concurridas.</p>
+      </div>
+    </div>
+  </div>
+  <div class="author-section">
+    <h3>Reuters</h3>
+    <div class="articles">
+
+      <div class="article-card">
+        <h2>El Gobierno nacional anunció superávit primario de 745.339 mln pesos</h2>
+        <p>El Gobierno nacional anunció un superávit primario de 745.339 millones de pesos en marzo de 2025, atribuido a la contención del gasto público y al crecimiento de la recaudación tributaria. El ministro de Economía subrayó el compromiso con la disciplina fiscal y anticipó próximas reformas orientadas a promover la inversión privada y revitalizar sectores productivos.</p>
+      </div>
+    </div>
+  </div>
+  <div class="author-section">
+    <h3>Federico Rivas Molina</h3>
+    <div class="articles">
+
+      <div class="article-card">
+        <h2>El presidente Javier Milei defiende la liberalización de precios</h2>
+        <p>El presidente Javier Milei defendió en una conferencia su política de liberalización de precios y criticó la postura de supermercados y proveedores por supuestos acuerdos para subir los costos. En su intervención, Milei aseguró que las medidas beneficiarán al consumidor y advirtió que impulsará una ley para sancionar a empresas que mantengan prácticas de fijación de precios abusivas.</p>
+      </div>
+    </div>
+  </div>
+  <div class="author-section">
+    <h3>María Pérez</h3>
+    <div class="articles">
+
+      <div class="article-card">
+        <h2>Incremento de cruceros en Ushuaia amenaza ecosistema costero</h2>
+        <p>El aumento de cruceros en Ushuaia durante la temporada alta ha generado preocupación entre biólogos marinos y funcionarios locales. Las emisiones de los grandes barcos y el tránsito constante cerca de la costa podrían alterar la fauna autóctona. Expertos sugieren establecer zonas de exclusión y mejorar los protocolos de limpieza para proteger los hábitats marinos.</p>
+      </div>
+
+      <div class="article-card">
+        <h2>Proyección del crecimiento inmobiliario en Río Grande</h2>
+        <p>El boom inmobiliario en Río Grande se ha visto impulsado por la demanda de viviendas estudiantiles y de trabajadores temporarios. El aumento de torres de departamentos deriva en debates sobre planificación urbana y disponibilidad de servicios. Autoridades trabajan en un plan regulatorio que priorice el desarrollo sustentable y espacios verdes. Incluye planos para nuevos espacios recreativos y reservas verdes que garanticen calidad de vida a largo plazo.</p>
+      </div>
+
+      <div class="article-card">
+        <h2>Debate sobre el costo de vida en la provincia</h2>
+        <p>La discusión sobre el costo de vida en Tierra del Fuego se intensificó tras el informe de inflación local, que supera el promedio nacional. Ciudadanos exigen revisar subsidios al transporte y analizar políticas de ingresos para trabajadores estatales. Economistas recomiendan una serie de medidas fiscales para amortiguar el impacto en sectores vulnerables.</p>
+      </div>
+
+      <div class="article-card">
+        <h2>Innovaciones locales en energías renovables en TDF</h2>
+        <p>Pequeñas empresas fueguinas comienzan a implementar paneles solares y aerogeneradores adaptados al clima extremo de la región. Estas iniciativas reducen costos de electricidad y aumentan la independencia energética de comunidades aisladas. El Gobierno provincial ofrece líneas de crédito y asesoría técnica para expandir estos proyectos y mejorar la matriz energética.</p>
+      </div>
+    </div>
+  </div>
+  <div class="author-section">
+    <h3>Carlos Ramirez</h3>
+    <div class="articles">
+
+      <div class="article-card">
+        <h2>Festival de la centolla atrae a turistas de todo el país</h2>
+        <p>El tradicional Festival de la Centolla en Río Grande registró un récord de asistencia, con visitantes de más de diez provincias argentinas. El evento celebra la pesca artesanal y ofrece conciertos, ferias de gastronomía y talleres de cocina. Organizadores estiman que el impacto económico superó los cinco millones de pesos en ventas directas durante el fin de semana.</p>
+      </div>
+
+      <div class="article-card">
+        <h2>Nuevos senderos eco-turísticos inaugurados en Tolhuin</h2>
+        <p>Autoridades municipales y organizaciones ambientales inauguraron nuevos senderos en el bosque de Tolhuin, diseñados para minimizar el impacto humano. Con señalización didáctica y miradores estratégicos, buscan educar sobre la biodiversidad local. Se espera que estas rutas fortalezcan el turismo sostenible y generen nuevas oportunidades para guías locales.</p>
+      </div>
+
+      <div class="article-card">
+        <h2>Plan de renovación urbana en Ushuaia recibe fondos nacionales</h2>
+        <p>El Gobierno nacional autorizó financiamiento para la renovación de espacios públicos en Ushuaia, incluyendo remodelación de plazas y mejora de veredas. El proyecto prevé modernizar el mobiliario urbano y optimizar la accesibilidad. Funcionarios destacaron que las obras generarán empleo local y elevarán la calidad de vida de residentes y visitantes. El financiamiento incluirá mejoras en conexiones de transporte urbano y caminos rurales para facilitar el acceso a nuevos desarrollos.</p>
+      </div>
+
+      <div class="article-card">
+        <h2>Inversión privada impulsa proyectos tecnológicos en TDF</h2>
+        <p>Empresas de base tecnológica de Tierra del Fuego recibieron inversiones de capital de riesgo para proyectos de software y robótica. Estos fondos permitirán desarrollar prototipos y escalar aplicaciones vinculadas a logística portuaria y monitoreo ambiental. Emprendedores locales confían en que esto generará un ecosistema innovador en la provincia. Además, se planea abrir un centro de innovación conjunta con la Universidad Nacional de Tierra del Fuego.</p>
+      </div>
+    </div>
+  </div>
+  <div class="author-section">
+    <h3>Ana López</h3>
+    <div class="articles">
+
+      <div class="article-card">
+        <h2>Aumento de tarifas del transporte en la ruta 3 genera protestas</h2>
+        <p>El reciente incremento de tarifas en el transporte interurbano de la ruta 3 movilizó a sindicatos y usuarios en Ushuaia y Río Grande. Se organizaron manifestaciones y cortes parciales de ruta para reclamar una revisión de los costos y analizar la situación de familias de bajos ingresos. Autoridades provinciales anunciaron mesas de diálogo para resolver el conflicto.</p>
+      </div>
+
+      <div class="article-card">
+        <h2>Descubrimiento arqueológico sacude a la comunidad yagana</h2>
+        <p>Investigadores hallaron en la costa del Canal Beagle restos de herramientas de piedra atribuidas a la cultura yagana con más de mil años de antigüedad. El hallazgo se produjo durante una prospección arqueológica y plantea nuevas hipótesis sobre asentamientos tempranos. El Museo del Fin del Mundo prepara una exhibición para presentar las piezas al público.</p>
+      </div>
+    </div>
+  </div>
+
   <div class="footer">
     <div>&copy; 2025 - Laboratorio de Programación y Lenguajes</div>
     <div class="powered">Powered by ViktorDev</div>
-    <div class="date">Generado el: 22/04/2025 20:10:47</div>
+    <div class="date">Generado el: 22/04/2025 21:28:20</div>
   </div>
 </body>
 </html>
