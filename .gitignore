@@ -1,3 +1,27 @@
-# Byte-compiled / optimized / DLL files
-__pycache__
+# Ignorar archivos de configuración del entorno
+.env
+
+# Ignorar carpetas de entornos virtuales
+venv/
+env/
+
+# Ignorar archivos de compilación
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignorar archivos de configuración de IDE
+.vscode/
+.idea/
+
+# Ignorar archivos de log
+*.log
+
+# Ignorar archivos de la base de datos SQLite
+*.sqlite3
+
+# Ignorar carpetas de distribución de Python
+build/
+dist/
+*.egg-info/
 
