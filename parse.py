@@ -28,6 +28,7 @@ class ParserHtml:
         articulos: lista de instancias de Articulo
         output_dir: carpeta donde se guardará el HTML generado
         """
+        self.original_articulos = articulos
         self.articulos = self._filter_and_normalize(articulos)
         self.output_dir = output_dir
         os.makedirs(self.output_dir, exist_ok=True)
@@ -41,7 +42,6 @@ class ParserHtml:
         for art in articulos:
             if art.titulo.strip() and art.autor.strip() and art.texto.strip():
                 autor_norm = " ".join(part.capitalize() for part in art.autor.strip().split())
-                # Crear nueva instancia con autor normalizado
                 normalizados.append(Articulo(
                     titulo=art.titulo.strip(),
                     autor=autor_norm,
@@ -49,19 +49,33 @@ class ParserHtml:
                 ))
         return normalizados
 
-    def generate_html(self, filename="index.html"):
+    def filter_by_keyword(self, keyword: str):
+        """
+        Devuelve una lista de Articulo que contienen la palabra clave en su texto (case-insensitive).
+        """
+        return [art for art in self.articulos if keyword.lower() in art.texto.lower()]
+
+    def generate_html(self, filename="index.html", keyword: str = None):
+        """
+        Genera el HTML. Si se pasa keyword, filtra los artículos antes de generar.
+        """
+        if keyword:
+            articulos_subset = self.filter_by_keyword(keyword)
+        else:
+            articulos_subset = self.articulos
+
+        html = self._build_html(articulos_subset)
         full_path = os.path.join(self.output_dir, filename)
-        html = self._build_html()
         with open(full_path, "w", encoding="utf-8") as f:
             f.write(html)
         print(f"HTML generado en: {full_path}")
 
-    def _build_html(self):
+    def _build_html(self, articulos_subset):
         now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
         # Agrupar artículos por autor
         by_author = OrderedDict()
-        for art in self.articulos:
+        for art in articulos_subset:
             by_author.setdefault(art.autor, []).append(art)
 
         # Cabecera y estilos inline
@@ -301,7 +315,8 @@ if __name__ == "__main__":
     # Convertir tuplas en objetos Articulo
     articulos = [Articulo(t, a, tx) for (t, a, tx) in ejemplos_reales + ejemplos_norm]
     parser = ParserHtml(articulos)
-    
-    parser.generate_html()
+    # Generar full o filtrado con palabra clave
+    parser.generate_html()            # Sin filtro
+    parser.generate_html("filtrado.html", keyword="consumo")  # Con filtro
 
 
