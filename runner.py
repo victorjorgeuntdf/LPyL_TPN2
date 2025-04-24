@@ -8,7 +8,7 @@ class HtmlApp:
         self.ejemplos_reales = [
         (
             "Huawei planea iniciar en mayo el envío de su chip de IA 910C a clientes chinos",
-            "rosangel salazar",
+            "rosangel salazar   ",
             "Huawei planea iniciar en mayo el envío de su nuevo chip de inteligencia artificial 910C a empresas chinas especializadas en procesamiento de datos. Según fuentes cercanas al proyecto, el fabricante completó las pruebas internas y logró un rendimiento comparable a soluciones occidentales, garantizando compatibilidad con arquitecturas existentes y optimizando el consumo energético."
         ),
         (
