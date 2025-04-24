@@ -1,36 +1,81 @@
 <!DOCTYPE html>
-<html lang='es'>
+<html lang="es">
 <head>
-  <meta charset='UTF-8'>
-  <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Temporada invernal en Ushuaia bate récords de reservas</title>
-  <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet'>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    html, body { height:100%; margin:0; padding:0; display:flex; flex-direction:column; font-family:'Segoe UI', Tahoma, sans-serif; background:#f5f5f5; }
-    .header { background-image:url('../static/foto_faro.jpg'); background-position:center; background-size:cover; background-repeat:no-repeat; min-height:500px; color:white; display:flex; align-items:center; justify-content:center; gap:1rem; }
+    html, body {
+      height:100%; margin:0; padding:0;
+      display:flex; flex-direction:column;
+      font-family:'Segoe UI', Tahoma, sans-serif;
+      background:#f5f5f5; color:#333;
+    }
+    /* Header con imagen de fondo */
+    .header {
+      background-image:url('../static/foto_faro.jpg');
+      background-position:center;
+      background-size:cover;
+      background-repeat:no-repeat;
+      min-height:500px;
+      color:white;
+      display:flex; align-items:center; justify-content:center; gap:1rem;
+    }
     .header img.logo { height:100px; width:100px; }
     .header h1 { margin:0; font-size:2.75rem; text-shadow:2px 2px 4px rgba(0,0,0,0.8); }
-    .footer { text-align:center; padding:1rem; font-size:0.8rem; color:#999; margin-top:auto; }
-    .footer .powered { margin-top:0.2rem; font-size:0.7rem; }
-    .footer .date { margin-top:0.2rem; font-size:0.7rem; }
+
+    /* Tarjetas */
+    .card-article {
+      box-shadow:0 2px 6px rgba(0,0,0,0.1);
+      transition:transform .3s;
+    }
+    .card-article:hover { transform:scale(1.03); }
+
+    /* Pie de página al fondo */
+    .footer {
+      text-align:center; padding:1rem;
+      font-size:0.8rem; color:#999; margin-top:auto; background:#f5f5f5;
+    }
+    .footer .powered { margin-top:0.15rem; font-size:0.7rem; }
+    .footer .date { margin-top:0.15rem; font-size:0.7rem; }
   </style>
 </head>
 <body>
-  <div class='header'><img src='../static/noticias_del_fuego.png' class='logo' alt='Noticias del Fuego'><h1>Noticias del Fuego</h1></div>
+  <div class="header"><img src="../static/noticias_del_fuego.png" class="logo" alt="Noticias del Fuego"><h1>Noticias del Fuego</h1></div>
   <nav class='navbar bg-light shadow-sm'><div class='container'><a class='navbar-brand' href='index.html'>&larr; Volver al Índice</a></div></nav>
-  <div class='container my-5'>
-    <div class='card shadow-sm'>
-      <div class='card-body'>
-        <h2 class='card-title text-primary'>Temporada invernal en Ushuaia bate récords de reservas</h2>
-        <p class='fst-italic'>Lautaro Grinspan</p>
-        <p>En Ushuaia, la temporada de turismo invernal registró un aumento histórico de reservas en cabañas y hoteles, alcanzando un 92% de ocupación durante julio. Las autoridades políticas destacan el impacto económico positivo, mientras organizaciones ambientales advierten sobre la presión sobre la flora y fauna local. Para mitigar efectos, se proponen nuevas rutas de senderismo menos concurridas.</p>
-      </div>
+  <main class="flex-fill">
+    <div class="container my-4">
+      <div class='card shadow-sm'><div class='card-body'><h2 class='text-primary'>Temporada invernal en Ushuaia bate récords de reservas</h2>
+<p class='fst-italic'>Por Grinspan Lautaro</p>
+<p>En Ushuaia, la temporada de turismo invernal registró un aumento histórico de reservas en cabañas y hoteles, alcanzando un 92% de ocupación durante julio. Las autoridades políticas destacan el impacto económico positivo, mientras organizaciones ambientales advierten sobre la presión sobre la flora y fauna local. Para mitigar efectos, se proponen nuevas rutas de senderismo menos concurridas.</p></div></div>
     </div>
-  <footer class='footer'>
+  </main>
+  <footer class="footer">
     <div>&copy; 2025 - Laboratorio de Programación y Lenguajes</div>
-    <div class='powered'>Powered by ViktorDev</div>
-    <div class='date'>Generado el: 24/04/2025 16:47:09</div>
+    <div class="powered">Powered by ViktorDev</div>
+    <div class="date">Generado el: 24/04/2025 18:14:17</div>
   </footer>
-  <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'></script>
+  <script>
+    function filterByInitial(letter) {
+      const cards = document.querySelectorAll('.row > .col-md-4');
+      let visible = 0;
+      cards.forEach(col => {
+        const subtitle = col.querySelector('.fst-italic').textContent.trim();
+        const surname = subtitle.split(' ').slice(-1)[0];
+        const initialChar = surname[0].toUpperCase();
+        if (!letter || initialChar === letter) {
+          col.style.display = '';
+          visible++;
+        } else {
+          col.style.display = 'none';
+        }
+      });
+      const noRes = document.getElementById('no-results');
+      if (letter && visible === 0) noRes.style.display = '';
+      else noRes.style.display = 'none';
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

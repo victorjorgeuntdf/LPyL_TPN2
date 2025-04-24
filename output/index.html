@@ -1,73 +1,289 @@
 <!DOCTYPE html>
-<html lang='es'>
+<html lang="es">
 <head>
-  <meta charset='UTF-8'>
-  <meta name='viewport' content='width=device-width, initial-scale=1, shrink-to-fit=no'>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <title>Noticias del Fuego</title>
-  <link href='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css' rel='stylesheet'>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
-    /* Reset y tipografía básica */
-    html, body { height:100%; margin:0; padding:0; display:flex; flex-direction:column; font-family:'Segoe UI', Tahoma, sans-serif; background:#f5f5f5; color:#333; }
-    /* Header con imagen de fondo adaptada */
-    .header { background-image:url('../static/foto_faro.jpg'); background-position:center; background-size:cover; background-repeat:no-repeat; min-height:500px; color:white; display:flex; align-items:center; justify-content:center; gap:1rem; }
+    html, body {
+      height:100%; margin:0; padding:0;
+      display:flex; flex-direction:column;
+      font-family:'Segoe UI', Tahoma, sans-serif;
+      background:#f5f5f5; color:#333;
+    }
+    /* Header con imagen de fondo */
+    .header {
+      background-image:url('../static/foto_faro.jpg');
+      background-position:center;
+      background-size:cover;
+      background-repeat:no-repeat;
+      min-height:500px;
+      color:white;
+      display:flex; align-items:center; justify-content:center; gap:1rem;
+    }
     .header img.logo { height:100px; width:100px; }
     .header h1 { margin:0; font-size:2.75rem; text-shadow:2px 2px 4px rgba(0,0,0,0.8); }
-    .card-article { box-shadow:0 2px 6px rgba(0,0,0,0.1); transition:transform .3s; }
+
+    /* Tarjetas */
+    .card-article {
+      box-shadow:0 2px 6px rgba(0,0,0,0.1);
+      transition:transform .3s;
+    }
     .card-article:hover { transform:scale(1.03); }
-    .footer { text-align:center; padding:1rem; font-size:0.8rem; color:#999; line-height:1.2; }
-    .footer .powered { margin-top:0.2rem; font-size:0.7rem; }
-    .footer .date { margin-top:0.2rem; font-size:0.7rem; }
+
+    /* Pie de página al fondo */
+    .footer {
+      text-align:center; padding:1rem;
+      font-size:0.8rem; color:#999; margin-top:auto; background:#f5f5f5;
+    }
+    .footer .powered { margin-top:0.15rem; font-size:0.7rem; }
+    .footer .date { margin-top:0.15rem; font-size:0.7rem; }
   </style>
 </head>
 <body>
-  <div class='header'><img src='../static/noticias_del_fuego.png' class='logo' alt='Noticias del Fuego'><h1>Noticias del Fuego</h1></div>
+  <div class="header"><img src="../static/noticias_del_fuego.png" class="logo" alt="Noticias del Fuego"><h1>Noticias del Fuego</h1></div>
   <nav class='navbar navbar-light bg-light shadow-sm'><div class='container'><a class='navbar-brand' href='resumen.html'>Resumen de artículos</a></div></nav>
-  <div class='flex-fill container my-4'>
-    <div class='letter-filter mb-4'><h2>Filtrar por inicial del apellido</h2><div class='btn-group' role='group'>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('A')">A</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('B')">B</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('C')">C</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('D')">D</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('E')">E</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('F')">F</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('G')">G</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('H')">H</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('I')">I</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('J')">J</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('K')">K</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('L')">L</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('M')">M</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('N')">N</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('O')">O</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('P')">P</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('Q')">Q</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('R')">R</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('S')">S</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('T')">T</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('U')">U</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('V')">V</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('W')">W</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('X')">X</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('Y')">Y</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial('Z')">Z</button>
-      <button class='btn btn-outline-secondary' onclick="filterByInitial(null)">Todos</button>
-    </div></div>
-    <div class='row'>
-    </div>
+  <main class="flex-fill">
+    <div class="container my-4">
+      <div class="letter-filter mb-4"><h2>Filtrar por inicial del apellido</h2><div class="btn-group" role="group">
+<button class='btn btn-outline-secondary' onclick="filterByInitial('A')">A</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('B')">B</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('C')">C</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('D')">D</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('E')">E</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('F')">F</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('G')">G</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('H')">H</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('I')">I</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('J')">J</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('K')">K</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('L')">L</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('M')">M</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('N')">N</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('O')">O</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('P')">P</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('Q')">Q</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('R')">R</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('S')">S</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('T')">T</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('U')">U</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('V')">V</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('W')">W</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('X')">X</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('Y')">Y</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial('Z')">Z</button>
+<button class='btn btn-outline-secondary' onclick="filterByInitial(null)">Todos</button></div></div><div id='no-results' class='text-center fw-bold mt-5' style='display:none'>No existen artículos para esta inicial</div><div class="row">
+
+  <div class='col-md-4 mb-4'>
+    <a href='incremento-de-cruceros-en-ushuaia-amenaza-ecosistema-costero.html' class='text-decoration-none text-dark'>
+      <div class='card h-100 card-article'>
+        <div class='card-body d-flex flex-column'>
+          <h5 class='card-title text-primary'>Incremento de cruceros en Ushuaia amenaza ecosistema costero</h5>
+          <p class='fst-italic mb-2'>Por Pérez María</p>
+          <p class='card-text flex-grow-1'>El aumento de cruceros en Ushuaia durante la temporada alta ha generado preocupación entre biólogos marinos y funcionarios locales. Las emisiones de los grandes barcos y el tránsito constante cerca de la costa podrían alterar la fauna autóctona. Expertos sugieren establecer zonas de exclusión y mejo…</p>
+        </div>
+      </div>
+    </a>
   </div>
-  <footer class='footer'>
+
+
+  <div class='col-md-4 mb-4'>
+    <a href='proyecci-n-del-crecimiento-inmobiliario-en-r-o-grande.html' class='text-decoration-none text-dark'>
+      <div class='card h-100 card-article'>
+        <div class='card-body d-flex flex-column'>
+          <h5 class='card-title text-primary'>Proyección del crecimiento inmobiliario en Río Grande</h5>
+          <p class='fst-italic mb-2'>Por Pérez María</p>
+          <p class='card-text flex-grow-1'>El boom inmobiliario en Río Grande se ha visto impulsado por la demanda de viviendas estudiantiles y de trabajadores temporarios. El aumento de torres de departamentos deriva en debates sobre planificación urbana y disponibilidad de servicios. Autoridades trabajan en un plan regulatorio que priorice…</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+
+  <div class='col-md-4 mb-4'>
+    <a href='debate-sobre-el-costo-de-vida-en-la-provincia.html' class='text-decoration-none text-dark'>
+      <div class='card h-100 card-article'>
+        <div class='card-body d-flex flex-column'>
+          <h5 class='card-title text-primary'>Debate sobre el costo de vida en la provincia</h5>
+          <p class='fst-italic mb-2'>Por Pérez María</p>
+          <p class='card-text flex-grow-1'>La discusión sobre el costo de vida en Tierra del Fuego se intensificó tras el informe de inflación local, que supera el promedio nacional. Ciudadanos exigen revisar subsidios al transporte y analizar políticas de ingresos para trabajadores estatales. Economistas recomiendan una serie de medidas fis…</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+
+  <div class='col-md-4 mb-4'>
+    <a href='innovaciones-locales-en-energ-as-renovables-en-tdf.html' class='text-decoration-none text-dark'>
+      <div class='card h-100 card-article'>
+        <div class='card-body d-flex flex-column'>
+          <h5 class='card-title text-primary'>Innovaciones locales en energías renovables en TDF</h5>
+          <p class='fst-italic mb-2'>Por Pérez María</p>
+          <p class='card-text flex-grow-1'>Pequeñas empresas fueguinas comienzan a implementar paneles solares y aerogeneradores adaptados al clima extremo de la región. Estas iniciativas reducen costos de electricidad y aumentan la independencia energética de comunidades aisladas. El Gobierno provincial ofrece líneas de crédito y asesoría t…</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+
+  <div class='col-md-4 mb-4'>
+    <a href='festival-de-la-centolla-atrae-a-turistas-de-todo-el-pa-s.html' class='text-decoration-none text-dark'>
+      <div class='card h-100 card-article'>
+        <div class='card-body d-flex flex-column'>
+          <h5 class='card-title text-primary'>Festival de la centolla atrae a turistas de todo el país</h5>
+          <p class='fst-italic mb-2'>Por Ramirez Carlos</p>
+          <p class='card-text flex-grow-1'>El tradicional Festival de la Centolla en Río Grande registró un récord de asistencia, con visitantes de más de diez provincias argentinas. El evento celebra la pesca artesanal y ofrece conciertos, ferias de gastronomía y talleres de cocina. Organizadores estiman que el impacto económico superó los …</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+
+  <div class='col-md-4 mb-4'>
+    <a href='nuevos-senderos-eco-tur-sticos-inaugurados-en-tolhuin.html' class='text-decoration-none text-dark'>
+      <div class='card h-100 card-article'>
+        <div class='card-body d-flex flex-column'>
+          <h5 class='card-title text-primary'>Nuevos senderos eco-turísticos inaugurados en Tolhuin</h5>
+          <p class='fst-italic mb-2'>Por Ramirez Carlos</p>
+          <p class='card-text flex-grow-1'>Autoridades municipales y organizaciones ambientales inauguraron nuevos senderos en el bosque de Tolhuin, diseñados para minimizar el impacto humano. Con señalización didáctica y miradores estratégicos, buscan educar sobre la biodiversidad local. Se espera que estas rutas fortalezcan el turismo sost…</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+
+  <div class='col-md-4 mb-4'>
+    <a href='plan-de-renovaci-n-urbana-en-ushuaia-recibe-fondos-nacionales.html' class='text-decoration-none text-dark'>
+      <div class='card h-100 card-article'>
+        <div class='card-body d-flex flex-column'>
+          <h5 class='card-title text-primary'>Plan de renovación urbana en Ushuaia recibe fondos nacionales</h5>
+          <p class='fst-italic mb-2'>Por Ramirez Carlos</p>
+          <p class='card-text flex-grow-1'>El Gobierno nacional autorizó financiamiento para la renovación de espacios públicos en Ushuaia, incluyendo remodelación de plazas y mejora de veredas. El proyecto prevé modernizar el mobiliario urbano y optimizar la accesibilidad. Funcionarios destacaron que las obras generarán empleo local y eleva…</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+
+  <div class='col-md-4 mb-4'>
+    <a href='inversi-n-privada-impulsa-proyectos-tecnol-gicos-en-tdf.html' class='text-decoration-none text-dark'>
+      <div class='card h-100 card-article'>
+        <div class='card-body d-flex flex-column'>
+          <h5 class='card-title text-primary'>Inversión privada impulsa proyectos tecnológicos en TDF</h5>
+          <p class='fst-italic mb-2'>Por Ramirez Carlos</p>
+          <p class='card-text flex-grow-1'>Empresas de base tecnológica de Tierra del Fuego recibieron inversiones de capital de riesgo para proyectos de software y robótica. Estos fondos permitirán desarrollar prototipos y escalar aplicaciones vinculadas a logística portuaria y monitoreo ambiental. Emprendedores locales confían en que esto …</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+
+  <div class='col-md-4 mb-4'>
+    <a href='aumento-de-tarifas-del-transporte-en-la-ruta-3-genera-protestas.html' class='text-decoration-none text-dark'>
+      <div class='card h-100 card-article'>
+        <div class='card-body d-flex flex-column'>
+          <h5 class='card-title text-primary'>Aumento de tarifas del transporte en la ruta 3 genera protestas</h5>
+          <p class='fst-italic mb-2'>Por López Ana</p>
+          <p class='card-text flex-grow-1'>El reciente incremento de tarifas en el transporte interurbano de la ruta 3 movilizó a sindicatos y usuarios en Ushuaia y Río Grande. Se organizaron manifestaciones y cortes parciales de ruta para reclamar una revisión de los costos y analizar la situación de familias de bajos ingresos. Autoridades …</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+
+  <div class='col-md-4 mb-4'>
+    <a href='descubrimiento-arqueol-gico-sacude-a-la-comunidad-yagana.html' class='text-decoration-none text-dark'>
+      <div class='card h-100 card-article'>
+        <div class='card-body d-flex flex-column'>
+          <h5 class='card-title text-primary'>Descubrimiento arqueológico sacude a la comunidad yagana</h5>
+          <p class='fst-italic mb-2'>Por López Ana</p>
+          <p class='card-text flex-grow-1'>Investigadores hallaron en la costa del Canal Beagle restos de herramientas de piedra atribuidas a la cultura yagana con más de mil años de antigüedad. El hallazgo se produjo durante una prospección arqueológica y plantea nuevas hipótesis sobre asentamientos tempranos. El Museo del Fin del Mundo pre…</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+
+  <div class='col-md-4 mb-4'>
+    <a href='huawei-planea-iniciar-en-mayo-el-env-o-de-su-chip-de-ia-910c-a-clientes-chinos.html' class='text-decoration-none text-dark'>
+      <div class='card h-100 card-article'>
+        <div class='card-body d-flex flex-column'>
+          <h5 class='card-title text-primary'>Huawei planea iniciar en mayo el envío de su chip de IA 910C a clientes chinos</h5>
+          <p class='fst-italic mb-2'>Por Salazar Rosangel</p>
+          <p class='card-text flex-grow-1'>Huawei planea iniciar en mayo el envío de su nuevo chip de inteligencia artificial 910C a empresas chinas especializadas en procesamiento de datos. Según fuentes cercanas al proyecto, el fabricante completó las pruebas internas y logró un rendimiento comparable a soluciones occidentales, garantizand…</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+
+  <div class='col-md-4 mb-4'>
+    <a href='temporada-invernal-en-ushuaia-bate-r-cords-de-reservas.html' class='text-decoration-none text-dark'>
+      <div class='card h-100 card-article'>
+        <div class='card-body d-flex flex-column'>
+          <h5 class='card-title text-primary'>Temporada invernal en Ushuaia bate récords de reservas</h5>
+          <p class='fst-italic mb-2'>Por Grinspan Lautaro</p>
+          <p class='card-text flex-grow-1'>En Ushuaia, la temporada de turismo invernal registró un aumento histórico de reservas en cabañas y hoteles, alcanzando un 92% de ocupación durante julio. Las autoridades políticas destacan el impacto económico positivo, mientras organizaciones ambientales advierten sobre la presión sobre la flora y…</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+
+  <div class='col-md-4 mb-4'>
+    <a href='el-gobierno-nacional-anunci-super-vit-primario-de-745-339-mln-pesos.html' class='text-decoration-none text-dark'>
+      <div class='card h-100 card-article'>
+        <div class='card-body d-flex flex-column'>
+          <h5 class='card-title text-primary'>El Gobierno nacional anunció superávit primario de 745.339 mln pesos</h5>
+          <p class='fst-italic mb-2'>Por Reuters</p>
+          <p class='card-text flex-grow-1'>El Gobierno nacional anunció un superávit primario de 745.339 millones de pesos en marzo de 2025, atribuido a la contención del gasto público y al crecimiento de la recaudación tributaria. El ministro de Economía subrayó el compromiso con la disciplina fiscal y anticipó próximas reformas orientadas …</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+
+  <div class='col-md-4 mb-4'>
+    <a href='el-presidente-javier-milei-defiende-la-liberalizaci-n-de-precios.html' class='text-decoration-none text-dark'>
+      <div class='card h-100 card-article'>
+        <div class='card-body d-flex flex-column'>
+          <h5 class='card-title text-primary'>El presidente Javier Milei defiende la liberalización de precios</h5>
+          <p class='fst-italic mb-2'>Por Rivas Molina Federico</p>
+          <p class='card-text flex-grow-1'>El presidente Javier Milei defendió en una conferencia su política de liberalización de precios y criticó la postura de supermercados y proveedores por supuestos acuerdos para subir los costos. En su intervención, Milei aseguró que las medidas beneficiarán al consumidor y advirtió que impulsará una …</p>
+        </div>
+      </div>
+    </a>
+  </div>
+
+</div>
+    </div>
+  </main>
+  <footer class="footer">
     <div>&copy; 2025 - Laboratorio de Programación y Lenguajes</div>
-    <div class='powered'>Powered by ViktorDev</div>
-    <div class='date'>Generado el: 24/04/2025 16:56:20</div>
+    <div class="powered">Powered by ViktorDev</div>
+    <div class="date">Generado el: 24/04/2025 18:14:17</div>
   </footer>
   <script>
     function filterByInitial(letter) {
-      document.querySelectorAll('.row > .col-md-4').forEach(col => {
-        const autor = col.querySelector('.fst-italic').textContent.split(' ')[1][0].toUpperCase();
-        col.style.display = (!letter || autor === letter) ? '' : 'none';
+      const cards = document.querySelectorAll('.row > .col-md-4');
+      let visible = 0;
+      cards.forEach(col => {
+        const subtitle = col.querySelector('.fst-italic').textContent.trim();
+        const surname = subtitle.split(' ').slice(-1)[0];
+        const initialChar = surname[0].toUpperCase();
+        if (!letter || initialChar === letter) {
+          col.style.display = '';
+          visible++;
+        } else {
+          col.style.display = 'none';
+        }
       });
+      const noRes = document.getElementById('no-results');
+      if (letter && visible === 0) noRes.style.display = '';
+      else noRes.style.display = 'none';
     }
   </script>
-  <script src='https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js'></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
