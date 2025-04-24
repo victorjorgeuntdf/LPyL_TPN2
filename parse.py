@@ -1,4 +1,5 @@
 import os
+import re
 from datetime import datetime
 from collections import OrderedDict
 
@@ -13,46 +14,28 @@ class Articulo:
 
     def to_html(self) -> str:
         """
-        Devuelve la representación HTML de la tarjeta de artículo,
-        mostrando solo los primeros 300 caracteres seguidos de '…' si excede.
+        Devuelve la tarjeta HTML para el índice, usando sólo un fragmento.
         """
-        # Truncar texto a 300 caracteres
-        if len(self.texto) > 300:
-            display_text = self.texto[:300] + "…"
-        else:
-            display_text = self.texto
+        snippet = (self.texto[:300] + "…") if len(self.texto) > 300 else self.texto
         return f"""
-      <div class=\"article-card\">
-        <h2>{self.titulo}</h2>
-        <p>{display_text}</p>
-      </div>
-"""
+      <div class=\"article-card\">\n        <h2>{self.titulo}</h2>\n        <p>{snippet}</p>\n      </div>\n"""
 
 class ParserHtml:
     def __init__(self, articulos, output_dir="output"):
         """
-        articulos: lista de instancias de Articulo
-        output_dir: carpeta donde se guardará el HTML generado
+        articulos: lista de Articulo
+        output_dir: carpeta de salida para HTML
         """
-        self.original_articulos = articulos
         self.articulos = self._filter_and_normalize(articulos)
         self.output_dir = output_dir
         os.makedirs(self.output_dir, exist_ok=True)
 
     def _filter_and_normalize(self, articulos):
-        """
-        - Elimina artículos con título, autor o texto vacíos.
-        - Quita espacios del autor y capitaliza nombre y apellido.
-        """
         normalizados = []
         for art in articulos:
             if art.titulo.strip() and art.autor.strip() and art.texto.strip():
-                autor_norm = " ".join(part.capitalize() for part in art.autor.strip().split())
-                normalizados.append(Articulo(
-                    titulo=art.titulo.strip(),
-                    autor=autor_norm,
-                    texto=art.texto.strip()
-                ))
+                autor_norm = " ".join(p.capitalize() for p in art.autor.strip().split())
+                normalizados.append(Articulo(art.titulo.strip(), autor_norm, art.texto.strip()))
         return normalizados
 
     def filter_by_keyword(self, keyword: str):
@@ -61,25 +44,37 @@ class ParserHtml:
         """
         return [art for art in self.articulos if keyword.lower() in art.texto.lower()]
 
-    def generate_html(self, filename="index.html", keyword: str = None):
+    def _slug(self, text: str) -> str:
         """
-        Genera el HTML. Si se pasa keyword, filtra los artículos antes de generar.
+        Genera un slug para filename basado en el título.
         """
-        if keyword:
-            articulos_subset = self.filter_by_keyword(keyword)
-        else:
-            articulos_subset = self.articulos
+        s = text.lower()
+        s = re.sub(r"[^a-z0-9]+", "-", s)
+        return s.strip('-')
 
-        html = self._build_html(articulos_subset)
-        full_path = os.path.join(self.output_dir, filename)
-        with open(full_path, "w", encoding="utf-8") as f:
-            f.write(html)
-        print(f"HTML generado en: {full_path}")
+    def generate_html(self, keyword: str = None):
+        """
+        Genera index.html con nav de autores y secciones de artículos, y páginas individuales.
+        Si se especifica keyword, filtra antes.
+        """
+        subset = self.filter_by_keyword(keyword) if keyword else self.articulos
 
-    def _build_html(self, articulos_subset):
+        # Generar índice principal
+        index_path = os.path.join(self.output_dir, 'index.html')
+        with open(index_path, 'w', encoding='utf-8') as f:
+            f.write(self._build_index(subset, keyword))
+        print(f"Índice generado en: {index_path}")
+
+        # Generar páginas individuales
+        for art in subset:
+            filename = f"{self._slug(art.titulo)}.html"
+            page_path = os.path.join(self.output_dir, filename)
+            with open(page_path, 'w', encoding='utf-8') as f:
+                f.write(self._build_article_page(art))
+            print(f"Página generada en: {page_path}")
+
+    def _build_index(self, articulos_subset, keyword=None) -> str:
         now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-
-        # Agrupar artículos por autor
         by_author = OrderedDict()
         for art in articulos_subset:
             by_author.setdefault(art.autor, []).append(art)
@@ -94,169 +89,95 @@ class ParserHtml:
   <title>Noticias del Fuego</title>
   <style>
     /* Reset y tipografía básica */
-    body {{
-      margin: 0;
-      padding: 0;
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      background-color: #f5f5f5;
-      color: #333;
-    }}
+    body {{ margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f5f5f5; color: #333; }}
 
     /* Header con imagen de fondo adaptada */
-    .header {{
-      background-image: url('../static/foto_faro.jpg');
-      background-position: center;
-      background-size: cover;
-      background-repeat: no-repeat;
-      min-height: 500px;              
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
-    }}
-    .header img.logo {{
-      height: 100px;
-      width: 100px;
-    }}
-    .header h1 {{ 
-      margin: 0; 
-      font-size: 2.75rem; 
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.8); 
-    }}
+    .header {{ background-image: url('../static/foto_faro.jpg'); background-position: center; background-size: cover; background-repeat: no-repeat; min-height: 500px; color: white; display: flex; align-items: center; justify-content: center; gap: 1rem; }}
+    .header img.logo {{ height: 100px; width: 100px; }}
+    .header h1 {{ margin: 0; font-size: 2.75rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }}
 
     /* Índice de autores */
-    .toc {{
-      margin: 1.5rem;
-      padding: 0;
-    }}
-    .toc h2 {{
-      margin-bottom: 0.5rem;
-      font-size: 1.25rem;
-      color: #1e88e5;
-    }}
-    .toc ul {{
-      list-style: none;
-      padding: 0;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem 1rem;
-    }}
+    .toc {{ margin: 1.5rem; padding: 0; }}
+    .toc h2 {{ margin-bottom: 0.5rem; font-size: 1.25rem; color: #1e88e5; }}
+    .toc ul {{ list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; }}
     .toc li {{ margin: 0; }}
-    .toc a {{
-      display: inline-block;
-      padding: 0.5rem 1rem;
-      background-color: #e0e0e0;
-      color: #333;
-      border-radius: 4px;
-      text-decoration: none;
-      transition: background-color 0.2s, color 0.2s;
-    }}
-    .toc a:hover {{
-      background-color: #1e88e5;
-      color: #fff;
-    }}
+    .toc a {{ display: inline-block; padding: 0.5rem 1rem; background-color: #e0e0e0; color: #333; border-radius: 4px; text-decoration: none; transition: background-color 0.2s, color 0.2s; }}
+    .toc a:hover {{ background-color: #1e88e5; color: #fff; }}
 
     /* Sección de autor */
-    .author-section {{
-      margin: 2rem;
-    }}
-    .author-section h3 {{
-      margin: 0 0 1rem;
-      font-size: 1.25rem;
-      color: #1e88e5;
-    }}
+    .author-section {{ margin: 2rem; }}
+    .author-section h3 {{ margin: 0 0 1rem; font-size: 1.25rem; color: #1e88e5; }}
 
     /* Contenedor de artículos */
-    .articles {{
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-      padding: 0;
-      margin: 0;
-    }}
+    .articles {{ display: flex; flex-direction: column; gap: 1rem; padding: 0; margin: 0; }}
 
     /* Tarjeta de artículo */
-    .article-card {{
-      width: 100%;
-      background: white;
-      border-radius: 8px;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-    }}
-    .article-card h2 {{
-      margin: 0 0 0.5rem;
-      font-size: 1.5rem;
-      color: #1e88e5;
-    }}
-    .article-card p {{
-      flex-grow: 1;
-      line-height: 1.5;
-    }}
+    .article-card {{ width: 100%; background: white; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 1.5rem; display: flex; flex-direction: column; }}
+    .article-card h2 {{ margin: 0 0 0.5rem; font-size: 1.5rem; color: #1e88e5; }}
+    .article-card p {{ flex-grow: 1; line-height: 1.5; }}
 
     /* Footer */
-    .footer {{
-      text-align: center;
-      padding: 1rem;
-      font-size: 0.8rem;
-      color: #999;
-      line-height: 1.2;
-    }}
-    .footer .powered {{
-      margin-top: 0.2rem;
-      font-size: 0.7rem;
-      font-style: normal;
-      color: inherit;
-    }}
-    .footer .date {{
-      margin-top: 0.2rem;
-      font-size: 0.7rem;
-      color: inherit;
-    }}
+    .footer {{ text-align: center; padding: 1rem; font-size: 0.8rem; color: #999; line-height: 1.2; }}
+    .footer .powered {{ margin-top: 0.2rem; font-size: 0.7rem; color: inherit; }}
+    .footer .date {{ margin-top: 0.2rem; font-size: 0.7rem; color: inherit; }}
   </style>
 </head>
 <body>
-  <div class="header">
-    <img src="../static/noticias_del_fuego.png" alt="Icono Noticias del Fuego" class="logo">
-    <h1>Noticias del Fuego</h1>
-  </div>
-  <!-- Índice de Autores -->
-  <nav class="toc">
-    <h2>Índice de Autores</h2>
-    <ul>
-"""
-        # Generar enlaces del índice
+  <div class=\"header\">\n    <img src=\"../static/noticias_del_fuego.png\" alt=\"Icono Noticias del Fuego\" class=\"logo\">\n    <h1>Noticias del Fuego</h1>\n  </div>\n  <nav class=\"toc\">\n    <h2>Índice de Autores</h2>\n    <ul>\n"""
+        body = head
+        # Índice de autores con anclas
         for autor in by_author:
-            anchor = autor.lower().replace(" ", "-")
-            head += f'      <li><a href="#autor-{anchor}">{autor}</a></li>\n'
-        head += """    </ul>
-  </nav>
-"""
-
-        # Generar secciones por autor
-        body = ""
+            anchor = autor.lower().replace(' ', '-')
+            body += f"      <li><a href=\"#autor-{anchor}\">{autor}</a></li>\n"
+        body += "    </ul>\n  </nav>\n"
+        # Secciones por autor y tarjetas
         for autor, lista in by_author.items():
-            anchor = autor.lower().replace(" ", "-")
-            body += f'  <div class="author-section" id="autor-{anchor}">\n'
-            body += f'    <h3>{autor}</h3>\n'
-            body += '    <div class="articles">\n'
+            anchor = autor.lower().replace(' ', '-')
+            body += f"  <div class=\"author-section\" id=\"autor-{anchor}\">\n"
+            body += f"    <h3>{autor}</h3>\n"
+            body += "    <div class=\"articles\">\n"
             for art in lista:
-                body += art.to_html()
+                slug = f"{self._slug(art.titulo)}.html"
+                card = art.to_html()
+                body += f"      <a href=\"{slug}\" style=\"text-decoration:none;color:inherit;\">{card}</a>\n"
             body += "    </div>\n  </div>\n"
+        # Footer inline
+        now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        body += f"  <div class=\"footer\">\n    <div>&copy; 2025 - Laboratorio de Programación y Lenguajes</div>\n    <div class=\"powered\">Powered by ViktorDev</div>\n    <div class=\"date\">Generado el: {now}</div>\n  </div>\n</body>\n</html>"
+        return body
 
-        # Pie de página
-        footer = f"""
-  <div class="footer">
-    <div>&copy; 2025 - Laboratorio de Programación y Lenguajes</div>
-    <div class="powered">Powered by ViktorDev</div>
-    <div class="date">Generado el: {now}</div>
-  </div>
-</body>
-</html>
-"""
-        return head + body + footer
+    def _build_article_page(self, art: Articulo) -> str:
+        now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        head = f"""
+<!DOCTYPE html>
+<html lang=\"es\">
+<head>
+  <meta charset=\"UTF-8\">
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+  <title>{art.titulo}</title>
+  <style>
+    /* Reset y tipografía básica */
+    body {{ margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f5f5f5; color: #333; }}
+
+    /* Header con imagen de fondo adaptada */
+    .header {{ background-image: url('../static/foto_faro.jpg'); background-position: center; background-size: cover; background-repeat: no-repeat; min-height: 500px; color: white; display: flex; align-items: center; justify-content: center; gap: 1rem; }}
+    .header img.logo {{ height: 100px; width: 100px; }}
+    .header h1 {{ margin: 0; font-size: 2.75rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }}
+
+    .content {{ padding: 2rem; background: white; }}
+    .title {{ font-size: 2rem; color: #1e88e5; margin: 0 0 1rem; }}
+    .author {{ font-style: italic; color: #555; margin-bottom: 1rem; }}
+    .article-text {{ line-height: 1.6; }}
+
+    /* Footer */
+    .footer {{ text-align: center; padding: 1rem; font-size: 0.8rem; color: #999; line-height: 1.2; }}
+    .footer .powered {{ margin-top: 0.2rem; font-size: 0.7rem; color: inherit; }}
+    .footer .date {{ margin-top: 0.2rem; font-size: 0.7rem; color: inherit; }}
+  </style>
+</head>
+<body>
+  <div class=\"header\">\n    <img src=\"../static/noticias_del_fuego.png\" alt=\"Icono Noticias del Fuego\" class=\"logo\">\n    <h1>Noticias del Fuego</h1>\n  </div>\n  <div class=\"content\">\n    <h1 class=\"title\">{art.titulo}</h1>\n    <div class=\"author\">Por {art.autor}</div>\n    <div class=\"article-text\">{art.texto}</div>\n  </div>\n  <div class=\"footer\">\n    <div>&copy; 2025 - Laboratorio de Programación y Lenguajes</div>\n    <div class=\"powered\">Powered by ViktorDev</div>\n    <div class=\"date\">Generado el: {now}</div>\n  </div>\n</body>\n</html>"""
+        return head
 
 if __name__ == "__main__":
     # [Ejemplos de artículos]
@@ -318,11 +239,7 @@ if __name__ == "__main__":
         ("Titular de prueba", "Autor de prueba", ""),
     ]
 
-    # Convertir tuplas en objetos Articulo
     articulos = [Articulo(t, a, tx) for (t, a, tx) in ejemplos_reales + ejemplos_norm]
     parser = ParserHtml(articulos)
-    # Generar full o filtrado con palabra clave
-    parser.generate_html()            # Sin filtro
-    parser.generate_html("filtrado.html", keyword="TURISMO")  # Con filtro
-
+    parser.generate_html()
 
