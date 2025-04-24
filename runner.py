@@ -63,7 +63,7 @@ class HtmlApp:
         ]
 
     def run(self):
-        articulos = [Articulo(t, a, tx) for t, a, tx in self.ejemplos_reales + self.ejemplos_norm]
+        articulos = [Articulo(t, a, tx) for t, a, tx in  self.ejemplos_norm + self.ejemplos_reales]
         parser = ParserHtml(articulos)
         parser.generate_html()
 
