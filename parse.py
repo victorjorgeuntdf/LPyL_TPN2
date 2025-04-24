@@ -4,7 +4,7 @@ from collections import OrderedDict
 
 class Articulo:
     """
-    Representa un artículo con título, autor y texto, y sabe generar su propio HTML.
+    Representa un artículo con título, autor y texto, y sabe generar su propio HTML truncando el texto.
     """
     def __init__(self, titulo: str, autor: str, texto: str):
         self.titulo = titulo
@@ -13,12 +13,18 @@ class Articulo:
 
     def to_html(self) -> str:
         """
-        Devuelve la representación HTML de la tarjeta de artículo.
+        Devuelve la representación HTML de la tarjeta de artículo,
+        mostrando solo los primeros 300 caracteres seguidos de '…' si excede.
         """
+        # Truncar texto a 300 caracteres
+        if len(self.texto) > 300:
+            display_text = self.texto[:300] + "…"
+        else:
+            display_text = self.texto
         return f"""
       <div class=\"article-card\">
         <h2>{self.titulo}</h2>
-        <p>{self.texto}</p>
+        <p>{display_text}</p>
       </div>
 """
 
@@ -317,6 +323,6 @@ if __name__ == "__main__":
     parser = ParserHtml(articulos)
     # Generar full o filtrado con palabra clave
     parser.generate_html()            # Sin filtro
-    parser.generate_html("filtrado.html", keyword="consumo")  # Con filtro
+    parser.generate_html("filtrado.html", keyword="TURISMO")  # Con filtro
 
 
