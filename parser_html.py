@@ -115,6 +115,22 @@ class ParserHtml:
             resultado.append(Articulo(titulo, autor_norm, texto))
         return resultado
 
+    def _get_adjacent_articles(self, current_article):
+        """Devuelve el artículo anterior y siguiente en base a la lista ordenada."""
+        index = None
+        for i, art in enumerate(self.articulos):
+            if art.slug() == current_article.slug():
+                index = i
+                break
+        
+        if index is None:
+            return None, None
+        
+        prev_art = self.articulos[index - 1] if index > 0 else None
+        next_art = self.articulos[index + 1] if index < len(self.articulos) - 1 else None
+        
+        return prev_art, next_art
+
     def filter_by_keyword(self, keyword: str):
         return [art for art in self.articulos if keyword.lower() in art.texto.lower()]
 
@@ -165,7 +181,31 @@ class ParserHtml:
 
         # Artículos
         for art in self.articulos:
-            art_content = f"<h2 class='text-primary'>{art.titulo}</h2>\n<p class='fst-italic'>Por {art.autor}</p>\n<p>{art.texto}</p>"
+            prev_art, next_art = self._get_adjacent_articles(art)
+            
+            # Construir navegación
+            nav_links = []
+            if prev_art:
+                nav_links.append(f"<a href='{prev_art.slug()}.html' class='btn btn-outline-primary'>&larr; Anterior: {prev_art.titulo[:30]}...</a>")
+            if next_art:
+                nav_links.append(f"<a href='{next_art.slug()}.html' class='btn btn-outline-primary'>Siguiente: {next_art.titulo[:30]}... &rarr;</a>")
+            
+            nav_html = ""
+            if nav_links:
+                nav_html = f"""
+                <div class="article-navigation mt-4 d-flex justify-content-between">
+                    {nav_links[0] if len(nav_links) > 1 else ''}
+                    {nav_links[1] if len(nav_links) > 1 else nav_links[0]}
+                </div>
+                """
+            
+            art_content = f"""
+            <h2 class='text-primary'>{art.titulo}</h2>
+            <p class='fst-italic'>Por {art.autor}</p>
+            <p>{art.texto}</p>
+            {nav_html}
+            """
+            
             art_page = LAYOUT.format(
                 title=art.titulo,
                 navbar="<nav class='navbar bg-light shadow-sm'><div class='container'><a class='navbar-brand' href='index.html'>&larr; Volver al Índice</a></div></nav>",
@@ -173,6 +213,7 @@ class ParserHtml:
                 year=datetime.now().year,
                 timestamp=datetime.now().strftime("%d/%m/%Y %H:%M:%S")
             )
+            
             with open(os.path.join(self.output_dir, f"{art.slug()}.html"), 'w', encoding='utf-8') as f:
                 f.write(art_page)
 
