@@ -177,7 +177,10 @@ class ParserHtml:
 </head>
 <body>
   <div class=\"header\">\n    <img src=\"../static/noticias_del_fuego.png\" alt=\"Icono Noticias del Fuego\" class=\"logo\">\n    <h1>Noticias del Fuego</h1>\n  </div>\n  <div class=\"content\">\n    <h1 class=\"title\">{art.titulo}</h1>\n    <div class=\"author\">Por {art.autor}</div>\n    <div class=\"article-text\">{art.texto}</div>\n  </div>\n  <div class=\"footer\">\n    <div>&copy; 2025 - Laboratorio de Programación y Lenguajes</div>\n    <div class=\"powered\">Powered by ViktorDev</div>\n    <div class=\"date\">Generado el: {now}</div>\n  </div>\n</body>\n</html>"""
-        return head
+        # Insertar enlace de regreso al índice después del header
+        page = head.replace("</div>\n  <div class=\"content\">",
+            f"</div>\n  <div style=\"padding:1rem;\"><a href=\"index.html\" style=\"color:#1e88e5;text-decoration:none;\">&larr; Volver al índice</a></div>\n  <div class=\"content\">")
+        return page
 
 if __name__ == "__main__":
     # [Ejemplos de artículos]
@@ -238,7 +241,7 @@ if __name__ == "__main__":
         ("Titular de prueba", "", "Autor faltante para validar filtro."),
         ("Titular de prueba", "Autor de prueba", ""),
     ]
-
+    
     articulos = [Articulo(t, a, tx) for (t, a, tx) in ejemplos_reales + ejemplos_norm]
     parser = ParserHtml(articulos)
     parser.generate_html()
