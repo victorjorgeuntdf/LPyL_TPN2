@@ -3,9 +3,7 @@
 **Materia:** Laboratorio de Programación y Lenguajes  
 **Universidad:** UNTDF (Universidad Nacional de Tierra del Fuego)  
 **Año:** 2025  
-**Docentes:** 
-            Matias Gel
-            Ivan D'uva
+**Docentes:** Matias Gel - Ivan D'uva
 
 ## Descripción del Proyecto
 
