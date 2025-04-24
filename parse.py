@@ -1,4 +1,4 @@
-# Este es el archivo del proyecto que contiene todo el proyecto en un solo archivo antes de separar en módulos.
+# Este es el archivo anterior que tiene todo el proyecto antes de haberlo separado en varios archivos
 import os
 import re
 from datetime import datetime
