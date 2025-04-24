@@ -25,8 +25,7 @@ Este proyecto representa el Trabajo Práctico N°2 de la materia, enfocado en la
 - 📊 **Página de resumen** con estadísticas por autor
 - 🔗 **Navegación integrada** entre artículos relacionados
 
-## Estructura del Proyecto
-
-
+## Licencia
+[MIT License] - © 2025 Laboratorio de Programación y Lenguajes - UNTDF
 
 
