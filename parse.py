@@ -5,182 +5,133 @@ from collections import OrderedDict
 
 class Articulo:
     """
-    Representa un artículo con título, autor y texto, y sabe generar su propio HTML truncando el texto.
+    Representa un artículo con título, autor y texto.
     """
     def __init__(self, titulo: str, autor: str, texto: str):
         self.titulo = titulo
         self.autor = autor
         self.texto = texto
 
-    def to_html(self) -> str:
-        """
-        Devuelve la tarjeta HTML para el índice, usando sólo un fragmento.
-        """
-        snippet = (self.texto[:300] + "…") if len(self.texto) > 300 else self.texto
-        return f"""
-      <div class=\"article-card\">\n        <h2>{self.titulo}</h2>\n        <p>{snippet}</p>\n      </div>\n"""
+    def snippet(self, length: int = 300) -> str:
+        return (self.texto[:length] + "…") if len(self.texto) > length else self.texto
 
 class ParserHtml:
     def __init__(self, articulos, output_dir="output"):
-        """
-        articulos: lista de Articulo
-        output_dir: carpeta de salida para HTML
-        """
         self.articulos = self._filter_and_normalize(articulos)
         self.output_dir = output_dir
         os.makedirs(self.output_dir, exist_ok=True)
 
     def _filter_and_normalize(self, articulos):
-        normalizados = []
+        resultado = []
         for art in articulos:
             if art.titulo.strip() and art.autor.strip() and art.texto.strip():
                 autor_norm = " ".join(p.capitalize() for p in art.autor.strip().split())
-                normalizados.append(Articulo(art.titulo.strip(), autor_norm, art.texto.strip()))
-        return normalizados
+                resultado.append(Articulo(art.titulo.strip(), autor_norm, art.texto.strip()))
+        return resultado
 
     def filter_by_keyword(self, keyword: str):
-        """
-        Devuelve una lista de Articulo que contienen la palabra clave en su texto (case-insensitive).
-        """
         return [art for art in self.articulos if keyword.lower() in art.texto.lower()]
 
     def _slug(self, text: str) -> str:
-        """
-        Genera un slug para filename basado en el título.
-        """
         s = text.lower()
         s = re.sub(r"[^a-z0-9]+", "-", s)
         return s.strip('-')
 
     def generate_html(self, keyword: str = None):
-        """
-        Genera index.html con nav de autores y secciones de artículos, y páginas individuales.
-        Si se especifica keyword, filtra antes.
-        """
         subset = self.filter_by_keyword(keyword) if keyword else self.articulos
-
-        # Generar índice principal
-        index_path = os.path.join(self.output_dir, 'index.html')
-        with open(index_path, 'w', encoding='utf-8') as f:
-            f.write(self._build_index(subset, keyword))
-        print(f"Índice generado en: {index_path}")
-
-        # Generar páginas individuales
+        # Índice
+        idx_path = os.path.join(self.output_dir, 'index.html')
+        with open(idx_path, 'w', encoding='utf-8') as f:
+            f.write(self._build_index(subset))
+        print(f"Índice generado: {idx_path}")
+        # Artículos
         for art in subset:
-            filename = f"{self._slug(art.titulo)}.html"
-            page_path = os.path.join(self.output_dir, filename)
-            with open(page_path, 'w', encoding='utf-8') as f:
-                f.write(self._build_article_page(art))
-            print(f"Página generada en: {page_path}")
+            name = f"{self._slug(art.titulo)}.html"
+            path = os.path.join(self.output_dir, name)
+            with open(path, 'w', encoding='utf-8') as f:
+                f.write(self._build_article(art))
+            print(f"Página artículo: {path}")
 
-    def _build_index(self, articulos_subset, keyword=None) -> str:
+    def _build_index(self, subset):
         now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
         by_author = OrderedDict()
-        for art in articulos_subset:
+        for art in subset:
             by_author.setdefault(art.autor, []).append(art)
-
-        # Cabecera y estilos inline
-        head = f"""
+        html = f"""
 <!DOCTYPE html>
 <html lang=\"es\">
 <head>
   <meta charset=\"UTF-8\">
-  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\">
   <title>Noticias del Fuego</title>
+  <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css\" rel=\"stylesheet\">
   <style>
-    /* Reset y tipografía básica */
-    body {{ margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f5f5f5; color: #333; }}
-
-    /* Header con imagen de fondo adaptada */
-    .header {{ background-image: url('../static/foto_faro.jpg'); background-position: center; background-size: cover; background-repeat: no-repeat; min-height: 500px; color: white; display: flex; align-items: center; justify-content: center; gap: 1rem; }}
-    .header img.logo {{ height: 100px; width: 100px; }}
-    .header h1 {{ margin: 0; font-size: 2.75rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }}
-
-    /* Índice de autores */
-    .toc {{ margin: 1.5rem; padding: 0; }}
-    .toc h2 {{ margin-bottom: 0.5rem; font-size: 1.25rem; color: #1e88e5; }}
-    .toc ul {{ list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 0.5rem 1rem; }}
-    .toc li {{ margin: 0; }}
-    .toc a {{ display: inline-block; padding: 0.5rem 1rem; background-color: #e0e0e0; color: #333; border-radius: 4px; text-decoration: none; transition: background-color 0.2s, color 0.2s; }}
-    .toc a:hover {{ background-color: #1e88e5; color: #fff; }}
-
-    /* Sección de autor */
-    .author-section {{ margin: 2rem; }}
-    .author-section h3 {{ margin: 0 0 1rem; font-size: 1.25rem; color: #1e88e5; }}
-
-    /* Contenedor de artículos */
-    .articles {{ display: flex; flex-direction: column; gap: 1rem; padding: 0; margin: 0; }}
-
-    /* Tarjeta de artículo */
-    .article-card {{ width: 100%; background: white; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 1.5rem; display: flex; flex-direction: column; }}
-    .article-card h2 {{ margin: 0 0 0.5rem; font-size: 1.5rem; color: #1e88e5; }}
-    .article-card p {{ flex-grow: 1; line-height: 1.5; }}
-
-    /* Footer */
-    .footer {{ text-align: center; padding: 1rem; font-size: 0.8rem; color: #999; line-height: 1.2; }}
-    .footer .powered {{ margin-top: 0.2rem; font-size: 0.7rem; color: inherit; }}
-    .footer .date {{ margin-top: 0.2rem; font-size: 0.7rem; color: inherit; }}
+    body {{ margin:0; padding:0; font-family:'Segoe UI', Tahoma, sans-serif; background:#f5f5f5; color:#333; }}
+    .header {{ background-image:url('../static/foto_faro.jpg'); background-size:cover; background-position:center; min-height:500px; display:flex; align-items:center; justify-content:center; color:#fff; }}
+    .header img.logo {{ height:100px; width:100px; }}
+    .header h1 {{ margin:0; font-size:2.75rem; text-shadow:2px 2px 4px rgba(0,0,0,0.8); }}
+    .footer {{ text-align:center; padding:1rem; font-size:.8rem; color:#999; }}
   </style>
 </head>
 <body>
-  <div class=\"header\">\n    <img src=\"../static/noticias_del_fuego.png\" alt=\"Icono Noticias del Fuego\" class=\"logo\">\n    <h1>Noticias del Fuego</h1>\n  </div>\n  <nav class=\"toc\">\n    <h2>Índice de Autores</h2>\n    <ul>\n"""
-        body = head
-        # Índice de autores con anclas
+  <div class=\"header\"> <img src=\"../static/noticias_del_fuego.png\" class=\"logo\"> <h1>Noticias del Fuego</h1> </div>
+  <div class=\"container my-4\">
+    <nav class=\"toc d-flex flex-wrap gap-2 mb-4\">
+      <h2 class=\"me-3 text-primary\">Índice de Autores</h2>
+"""
         for autor in by_author:
             anchor = autor.lower().replace(' ', '-')
-            body += f"      <li><a href=\"#autor-{anchor}\">{autor}</a></li>\n"
-        body += "    </ul>\n  </nav>\n"
-        # Secciones por autor y tarjetas
-        for autor, lista in by_author.items():
+            html += f"      <a href=\"#autor-{anchor}\" class=\"btn btn-outline-primary btn-sm\">{autor}</a>\n"
+        html += "    </nav>\n"
+        # Secciones
+        for autor, arts in by_author.items():
             anchor = autor.lower().replace(' ', '-')
-            body += f"  <div class=\"author-section\" id=\"autor-{anchor}\">\n"
-            body += f"    <h3>{autor}</h3>\n"
-            body += "    <div class=\"articles\">\n"
-            for art in lista:
+            html += f"    <section id=\"autor-{anchor}\" class=\"mb-5\"> <h3 class=\"text-primary\">{autor}</h3> <div class=\"row\">\n"
+            for art in arts:
                 slug = f"{self._slug(art.titulo)}.html"
-                card = art.to_html()
-                body += f"      <a href=\"{slug}\" style=\"text-decoration:none;color:inherit;\">{card}</a>\n"
-            body += "    </div>\n  </div>\n"
-        # Footer inline
-        now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        body += f"  <div class=\"footer\">\n    <div>&copy; 2025 - Laboratorio de Programación y Lenguajes</div>\n    <div class=\"powered\">Powered by ViktorDev</div>\n    <div class=\"date\">Generado el: {now}</div>\n  </div>\n</body>\n</html>"
-        return body
+                snippet = art.snippet()
+                html += f"      <a href=\"{slug}\" class=\"col-md-4 mb-4 text-decoration-none\">"
+                html += f"<div class=\"card h-100\"><div class=\"card-body d-flex flex-column\">"
+                html += f"<h5 class=\"card-title text-primary\">{art.titulo}</h5>"
+                html += f"<p class=\"card-text flex-grow-1\">{snippet}</p></div></div></a>\n"
+            html += "    </div> </section>\n"
+        # Footer
+        html += f"  </div> <div class=\"footer\">&copy; 2025 - Laboratorio de Programación y Lenguajes<br>Powered by ViktorDev<br>Generado: {now}</div>"
+        html += "<script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js\"></script></body></html>"
+        return html
 
-    def _build_article_page(self, art: Articulo) -> str:
+    def _build_article(self, art):
         now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
-        head = f"""
+        html = f"""
 <!DOCTYPE html>
 <html lang=\"es\">
 <head>
   <meta charset=\"UTF-8\">
-  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, shrink-to-fit=no\">
   <title>{art.titulo}</title>
+  <link href=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css\" rel=\"stylesheet\">
   <style>
-    /* Reset y tipografía básica */
-    body {{ margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background-color: #f5f5f5; color: #333; }}
-
-    /* Header con imagen de fondo adaptada */
-    .header {{ background-image: url('../static/foto_faro.jpg'); background-position: center; background-size: cover; background-repeat: no-repeat; min-height: 500px; color: white; display: flex; align-items: center; justify-content: center; gap: 1rem; }}
-    .header img.logo {{ height: 100px; width: 100px; }}
-    .header h1 {{ margin: 0; font-size: 2.75rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }}
-
-    .content {{ padding: 2rem; background: white; }}
-    .title {{ font-size: 2rem; color: #1e88e5; margin: 0 0 1rem; }}
-    .author {{ font-style: italic; color: #555; margin-bottom: 1rem; }}
-    .article-text {{ line-height: 1.6; }}
-
-    /* Footer */
-    .footer {{ text-align: center; padding: 1rem; font-size: 0.8rem; color: #999; line-height: 1.2; }}
-    .footer .powered {{ margin-top: 0.2rem; font-size: 0.7rem; color: inherit; }}
-    .footer .date {{ margin-top: 0.2rem; font-size: 0.7rem; color: inherit; }}
+    body {{ margin:0; padding:0; font-family:'Segoe UI', Tahoma, sans-serif; background:#f5f5f5; color:#333; }}
+    .header {{ background-image:url('../static/foto_faro.jpg'); background-size:cover; background-position:center; min-height:500px; display:flex; align-items:center; justify-content:center; color:#fff; }}
+    .header img.logo {{ height:100px; width:100px; }}
+    .header h1 {{ margin:0; font-size:2.75rem; text-shadow:2px 2px 4px rgba(0,0,0,0.8); }}
+    .footer {{ text-align:center; padding:1rem; font-size:.8rem; color:#999; }}
   </style>
 </head>
 <body>
-  <div class=\"header\">\n    <img src=\"../static/noticias_del_fuego.png\" alt=\"Icono Noticias del Fuego\" class=\"logo\">\n    <h1>Noticias del Fuego</h1>\n  </div>\n  <div class=\"content\">\n    <h1 class=\"title\">{art.titulo}</h1>\n    <div class=\"author\">Por {art.autor}</div>\n    <div class=\"article-text\">{art.texto}</div>\n  </div>\n  <div class=\"footer\">\n    <div>&copy; 2025 - Laboratorio de Programación y Lenguajes</div>\n    <div class=\"powered\">Powered by ViktorDev</div>\n    <div class=\"date\">Generado el: {now}</div>\n  </div>\n</body>\n</html>"""
-        # Insertar enlace de regreso al índice después del header
-        page = head.replace("</div>\n  <div class=\"content\">",
-            f"</div>\n  <div style=\"padding:1rem;\"><a href=\"index.html\" style=\"color:#1e88e5;text-decoration:none;\">&larr; Volver al índice</a></div>\n  <div class=\"content\">")
-        return page
+  <div class=\"header\"> <img src=\"../static/noticias_del_fuego.png\" class=\"logo\"> <h1>Noticias del Fuego</h1> </div>
+  <nav class=\"navbar bg-light shadow-sm\"><div class=\"container\"><a class=\"navbar-brand\" href=\"index.html\">&larr; Volver al índice</a></div></nav>
+  <div class=\"container my-5 bg-white p-4 shadow-sm\">
+    <h2 class=\"text-primary\">{art.titulo}</h2>
+    <p class=\"fst-italic text-muted\">Por {art.autor}</p>
+    <p>{art.texto}</p>
+  </div>
+  <div class=\"footer\">&copy; 2025 - Laboratorio de Programación y Lenguajes<br>Powered by ViktorDev<br>Generado: {now}</div>
+  <script src=\"https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js\"></script>
+</body>
+</html>
+"""
+        return html
 
 if __name__ == "__main__":
     # [Ejemplos de artículos]
@@ -242,7 +193,6 @@ if __name__ == "__main__":
         ("Titular de prueba", "Autor de prueba", ""),
     ]
     
-    articulos = [Articulo(t, a, tx) for (t, a, tx) in ejemplos_reales + ejemplos_norm]
-    parser = ParserHtml(articulos)
+    ejemplos = ejemplos_reales + ejemplos_norm
+    parser = ParserHtml([Articulo(t,a,tx) for t,a,tx in ejemplos])
     parser.generate_html()
-
