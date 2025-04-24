@@ -1,7 +1,7 @@
 import os
 from datetime import datetime
 from collections import OrderedDict
-from articulo import Articulo
+from articulo import Articulo, InvalidArticleError
 
 class ParserHtml:
     """
@@ -16,11 +16,27 @@ class ParserHtml:
     def _filter_and_normalize(self, articulos):
         resultado = []
         for art in articulos:
-            if art.titulo.strip() and art.autor.strip() and art.texto.strip():
-                # Capitalizar cada parte del autor
-                partes = art.autor.strip().split()
-                autor_norm = " ".join(p.capitalize() for p in partes)
-                resultado.append(Articulo(art.titulo.strip(), autor_norm, art.texto.strip()))
+            titulo = art.titulo.strip()
+            autor  = art.autor.strip()
+            texto  = art.texto.strip()
+            # Validar no vacíos
+            if not (titulo and autor and texto):
+                continue
+            # Validar longitud mínima
+            try:
+                if len(titulo) < 10:
+                    raise InvalidArticleError(f"El título debe tener al menos 10 caracteres ('{titulo}')")
+                if len(texto) < 10:
+                    raise InvalidArticleError(f"El texto debe tener al menos 10 caracteres ('{texto}')")
+            except InvalidArticleError as e:
+                # Registrar error y continuar
+                self.errors.append(str(e))
+                continue
+            # Normalizar autor
+            partes = autor.split()
+            autor_norm = " ".join(p.capitalize() for p in partes)
+            # Crear objeto Articulo ya limpio
+            resultado.append(Articulo(titulo, autor_norm, texto))
         return resultado
 
     def filter_by_keyword(self, keyword: str):
