@@ -14,6 +14,7 @@ def crear_zip_proyecto():
         'LICENSE',
         'README.md',
         'TP 2.pdf',
+        'crear_zip.py',
     ]
     carpetas_a_incluir = [
         'static' ,
